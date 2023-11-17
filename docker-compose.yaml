@@ -1,0 +1,56 @@
+version: '3.1'
+services:
+  #nginx service
+  nginx:
+    build:
+      context: nginx
+      dockerfile: DockerFile
+    container_name: nginx
+    restart: unless-stopped
+    volumes:
+      - ./src:/usr/share/nginx/html
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      internal:
+        ipv4_address: 192.168.1.15
+    depends_on:
+      - php
+  #php service
+  php:
+    build:
+      context: php
+      dockerfile: DockerFile
+    container_name: php
+    restart: unless-stopped
+    volumes:
+      - ./src:/usr/share/nginx/html
+    networks:
+      internal:
+        ipv4_address: 192.168.1.10
+  #mysql DB
+  db:
+    image: mysql:latest
+    container_name: mysql_db
+    restart: unless-stopped
+    command: "mysqld --init-file /data/application/MoonCakeDB_3_1.sql"
+    volumes:
+      - ./db_files/MoonCakeDB_3_1.sql:/data/application/MoonCakeDB_3_1.sql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ZozmfWc5SUCUqLwdKoCB/Nz2UCTKovTBTsYU32sOoWc=
+      MYSQL_DATABASE: lunardelights
+      MYSQL_USER: lunaruser
+      MYSQL_PASSWORD: ml9eRfRmNgcMUa3LfwzIWeTLI0wZIjXtr+Gi9+ELdDo=
+    networks:
+      internal:
+        ipv4_address: 192.168.1.5
+
+networks:
+  internal:
+    driver: bridge
+    ipam:
+      config:
+      - subnet: 192.168.1.0/24

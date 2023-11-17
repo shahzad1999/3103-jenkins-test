@@ -1,0 +1,10 @@
+# Disable directory listings (mod_autoindex)
+Options -Indexes
+
+ErrorDocument 404 /error/error404.html
+
+# Look for index.html then index.php in the directory being requested
+DirectoryIndex index.html index.php
+
+# Prevent mod_dir appending the trailing slash
+DirectorySlash Off
