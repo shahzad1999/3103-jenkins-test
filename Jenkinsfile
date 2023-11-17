@@ -1,16 +1,30 @@
-pipeline { 
+pipeline {
     agent any
-    stages { 
-        stage('Build') {
+
+    stages {
+        stage('Checkout') {
             steps {
-                echo 'Building app!'
-                sh 'docker compose -f docker-compose.yaml build'
+                // Checkout the code from your Git repository
+                git(url: 'https://github.com/shahzad1999/3103-jenkins-test.git')
             }
         }
-    }	
+
+        stage('OWASP Dependency-Check Vulnerabilities') {
+            steps {
+                dependencyCheck additionalArguments: ''' 
+                            -o './'
+                            -s './'
+                            -f 'ALL' 
+                            --prettyPrint''', odcInstallation: 'OWASP Dependency-Check Vulnerabilities'
+
+                    dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+            }
+        }
+    }
+
     post {
         success {
-            dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+			dependencyCheckPublisher pattern: 'dependency-check-report.xml'
 		}
     }
 }
